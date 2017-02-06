@@ -56,7 +56,6 @@ signals:
 class NoughtsAndCrosses : public QObject {
 	Q_OBJECT
 
-
 	QList<QObject*> map;
 	Q_PROPERTY(QList<QObject*> map READ getMap NOTIFY mapChanged)
 
@@ -69,14 +68,33 @@ class NoughtsAndCrosses : public QObject {
 	Player *currentPlayer;
 	Q_PROPERTY(QObject* currentPlayer READ getCurrentPlayer NOTIFY currentPlayerChanged)
 
+	int state;
+	Q_PROPERTY(int state READ getState NOTIFY stateChanged)
+
+	QList<QObject*> winSequences;
+	Q_PROPERTY(QList<QObject*> winSequences READ getWinSequences NOTIFY winSequencesChanged)
+
 	QObject *getCurrentPlayer () const;
 	QObject *getPlayer1() const;
 	QObject *getPlayer2() const;
+	int getState() const;
+
+	QList<QObject*> getWinSequences () const;
+
 	void changePlayer();
 
 public:
+	enum GameState {
+		Start, Playing, End
+	};
+	Q_ENUMS(GameState)
+
 	Q_INVOKABLE void markField(const int fieldId);
+	Q_INVOKABLE void startGame();
+
 	QList<QObject*> getMap () const;
+	void setState(NoughtsAndCrosses::GameState newState);
+
 	explicit NoughtsAndCrosses(QObject *parent = 0);
 	~NoughtsAndCrosses();
 
@@ -85,9 +103,12 @@ signals:
 	void testChanged();
 	void mapChanged();
 	void currentPlayerChanged();
+	void stateChanged();
+	void winSequencesChanged();
 
 public slots:
-	void check(int fieldId);
+	void check();
 };
+Q_DECLARE_METATYPE(NoughtsAndCrosses::GameState)
 
 #endif // NOUGHTSANDCROSSES_H

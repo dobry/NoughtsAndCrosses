@@ -26,7 +26,7 @@ int Field::getMark() const {
 Field::Field() : mark(0) {
 }
 
-NoughtsAndCrosses::NoughtsAndCrosses(QObject *parent) : QObject(parent) {
+NoughtsAndCrosses::NoughtsAndCrosses(QObject *parent) : QObject(parent), state(GameState::Start) {
 	player1 = new Player(Player::Nought);
 	player2 = new Player(Player::Cross);
 	currentPlayer = player1;
@@ -49,7 +49,7 @@ NoughtsAndCrosses::~NoughtsAndCrosses() {
 /* Called whenever a player marks a field.
  * Checks all possible lines to determin if current player won.
  */
-void NoughtsAndCrosses::check(int fieldId) {
+void NoughtsAndCrosses::check() {
 	std::cout << "checking" << std::endl;
 
 	// Local variable needed to capture `map` in lambdas below
@@ -111,6 +111,7 @@ void NoughtsAndCrosses::check(int fieldId) {
 
 	if (verticalWin.first != -1) {
 		printWin(verticalWin);
+		setState(GameState::End);
 	}
 	if (horizontalWin.first != -1) {
 		printWin(horizontalWin);
@@ -122,24 +123,40 @@ void NoughtsAndCrosses::check(int fieldId) {
 		printWin(rightDiagonalWin);
 	}
 
+
 }
 
 QList<QObject*> NoughtsAndCrosses::getMap () const {
 	return map;
 }
 
+void NoughtsAndCrosses::setState(NoughtsAndCrosses::GameState newState)
+{
+	if (state != newState) {
+		state = newState;
+		emit stateChanged();
+	}
+}
+
 void NoughtsAndCrosses::markField(const int fieldId) {
 	auto field = static_cast<Field*>(map.at(fieldId));
+
+	setState(GameState::Playing);
 
 	// when field is empty mark it as current player's field, check win conditions, and change player
 	if (field->getMark() == Player::None) {
 		field->setMark(static_cast<Player::PlayerMark>(currentPlayer->getMark()));
-		check(fieldId);
+		check();
 		changePlayer();
 	}
 	else {
 		return;
 	}
+}
+
+void NoughtsAndCrosses::startGame()
+{
+	setState(GameState::Start);
 }
 
 QObject *NoughtsAndCrosses::getCurrentPlayer () const {
@@ -154,7 +171,19 @@ QObject *NoughtsAndCrosses::getPlayer2() const {
 	return player2;
 }
 
+int NoughtsAndCrosses::getState() const
+{
+	return state;
+}
+
+QList<QObject *> NoughtsAndCrosses::getWinSequences() const
+{
+	return winSequences;
+}
+
 void NoughtsAndCrosses::changePlayer() {
-	currentPlayer = (player1 == currentPlayer) ? player2 : player1;
-	emit currentPlayerChanged();
+	if (state == GameState::Playing) {
+		currentPlayer = (player1 == currentPlayer) ? player2 : player1;
+		emit currentPlayerChanged();
+	}
 }

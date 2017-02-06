@@ -10,7 +10,8 @@ int main(int argc, char *argv[]) {
 	QGuiApplication app(argc, argv);
 
 	qmlRegisterType<NoughtsAndCrosses>("Game", 1, 0, "NoughtsAndCrosses");
-	qmlRegisterUncreatableType<Player>("Game", 1, 0, "Player", "PlayerMark	");
+	qmlRegisterUncreatableType<Player>("Game", 1, 0, "Player", "PlayerMark");
+	qmlRegisterUncreatableType<Player>("Game", 1, 0, "NoughtsAndCrosses", "GameState");
 
 	QQmlApplicationEngine engine;
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
