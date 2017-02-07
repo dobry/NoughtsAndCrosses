@@ -11,6 +11,12 @@ int Player::getScore() const {
 	return score;
 }
 
+void Player::wonGame()
+{
+	score++;
+	emit scoreChanged(score);
+}
+
 Player::Player(Player::PlayerMark playersMark) : mark(playersMark), score(0) {
 }
 
@@ -26,7 +32,7 @@ int Field::getMark() const {
 Field::Field() : mark(0) {
 }
 
-NoughtsAndCrosses::NoughtsAndCrosses(QObject *parent) : QObject(parent), state(GameState::Start) {
+NoughtsAndCrosses::NoughtsAndCrosses(QObject *parent) : QObject(parent), winner(nullptr), state(GameState::Start) {
 	player1 = new Player(Player::Nought);
 	player2 = new Player(Player::Cross);
 	currentPlayer = player1;
@@ -44,6 +50,10 @@ NoughtsAndCrosses::~NoughtsAndCrosses() {
 
 	delete player1;
 	delete player2;
+
+	for (auto i = 0; i < winSequences.size(); i++) {
+		delete winSequences.takeLast();
+	}
 }
 
 /* Called whenever a player marks a field.
@@ -86,56 +96,45 @@ void NoughtsAndCrosses::check() {
 		return WinCondition(-1, Player::None);
 	};
 
-//	int gap = 1, displacement = 3;
-//	for (int first : {0, gap, 2 * gap}) {
-//		if (getMark(first) != Player::None
-//			&& getMark(first) == getMark(first + displacement)
-//			&& getMark(first) == getMark(first + displacement * 2)) {
-//			std::cout << "yes! " << first << std::endl;
-//		}
-//	}
+	auto isWin = [this] (WinCondition condition, WinSequence::Direction direction) {
+		if (condition.first != -1) {
+			auto sequence = new WinSequence(condition.first, direction);
+			winSequences.append(sequence);
+			emit winSequencesChanged();
 
-	// check vertical
-	auto verticalWin = checkLines(1, 3);
-
-	// check horizontal
-	auto horizontalWin = checkLines(3, 1);
-
-	// check diagonals
-	auto leftDiagonalWin = checkLine(0, 4);
-	auto rightDiagonalWin = checkLine(2, 3);
-
-	auto printWin = [] (WinCondition winCondition) {
-		std::cout << "win left? " << winCondition.first << " player " << winCondition.second << std::endl;
+			if (state != GameState::End) {
+				setState(GameState::End);
+				this->setWinner(condition);
+			}
+		}
 	};
 
-	if (verticalWin.first != -1) {
-		printWin(verticalWin);
-		setState(GameState::End);
-	}
-	if (horizontalWin.first != -1) {
-		printWin(horizontalWin);
-	}
-	if (leftDiagonalWin.first != -1) {
-		printWin(leftDiagonalWin);
-	}
-	if (rightDiagonalWin.first != -1) {
-		printWin(rightDiagonalWin);
-	}
+	// check vertical
+	isWin(checkLines(1, 3), WinSequence::Vertical);
 
+	// check horizontal
+	isWin(checkLines(3, 1), WinSequence::Horizontal);
 
+	// check diagonals
+	isWin(checkLine(0, 4), WinSequence::LeftDiagonal);
+	isWin(checkLine(2, 3), WinSequence::RightDiagonal);
 }
 
 QList<QObject*> NoughtsAndCrosses::getMap () const {
 	return map;
 }
 
-void NoughtsAndCrosses::setState(NoughtsAndCrosses::GameState newState)
-{
+void NoughtsAndCrosses::setState(NoughtsAndCrosses::GameState newState) {
 	if (state != newState) {
 		state = newState;
 		emit stateChanged();
 	}
+}
+
+void NoughtsAndCrosses::setWinner(WinCondition condition) {
+	winner = (condition.second == Player::Nought ? player1 : player2);
+	winner->wonGame();
+	emit winnerChanged();
 }
 
 void NoughtsAndCrosses::markField(const int fieldId) {
@@ -154,8 +153,7 @@ void NoughtsAndCrosses::markField(const int fieldId) {
 	}
 }
 
-void NoughtsAndCrosses::startGame()
-{
+void NoughtsAndCrosses::startGame() {
 	setState(GameState::Start);
 }
 
@@ -171,13 +169,15 @@ QObject *NoughtsAndCrosses::getPlayer2() const {
 	return player2;
 }
 
-int NoughtsAndCrosses::getState() const
-{
+int NoughtsAndCrosses::getState() const {
 	return state;
 }
 
-QList<QObject *> NoughtsAndCrosses::getWinSequences() const
-{
+QObject *NoughtsAndCrosses::getWinner() const {
+	return winner;
+}
+
+QList<QObject *> NoughtsAndCrosses::getWinSequences() const {
 	return winSequences;
 }
 
@@ -186,4 +186,15 @@ void NoughtsAndCrosses::changePlayer() {
 		currentPlayer = (player1 == currentPlayer) ? player2 : player1;
 		emit currentPlayerChanged();
 	}
+}
+
+int WinSequence::getFrom() const {
+	return from;
+}
+
+int WinSequence::getDirection() const {
+	return direction;
+}
+
+WinSequence::WinSequence(int setFrom, int setDirection) : from(setFrom), direction(setDirection) {
 }

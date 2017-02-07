@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 
 	qmlRegisterType<NoughtsAndCrosses>("Game", 1, 0, "NoughtsAndCrosses");
 	qmlRegisterUncreatableType<Player>("Game", 1, 0, "Player", "PlayerMark");
-	qmlRegisterUncreatableType<Player>("Game", 1, 0, "NoughtsAndCrosses", "GameState");
+	qmlRegisterUncreatableType<WinSequence>("Game", 1, 0, "WinSequence", "Direction");
 
 	QQmlApplicationEngine engine;
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
