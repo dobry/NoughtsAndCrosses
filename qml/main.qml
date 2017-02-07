@@ -13,12 +13,11 @@ Window {
 
     property var game: NoughtsAndCrosses { }
 
-    property real cellWidth: windowRoot.width / 3
-    property real cellHeight: cellWidth
-    property real playerBarHeight: cellWidth / 3
+    property real cellSize: windowRoot.width / 3
+    property real playerBarHeight: cellSize / 3
     property real innerRatio: 0.8
     property real marginRatio: (1 - innerRatio) / 2
-    property real marginValue: cellWidth * marginRatio
+    property real marginValue: cellSize * marginRatio
 
     ColumnLayout {
         anchors {
@@ -36,35 +35,21 @@ Window {
             Layout.preferredHeight: playerBarHeight
             Layout.minimumHeight: playerBarHeight
 
-            size: cellWidth - 2 * marginValue
+            size: cellSize - 2 * marginValue
             game: windowRoot.game
         }
 
-        GridView {
-            id: mapGrid
+        GameMap {
             anchors {
                 left: parent.left
                 right: parent.right
             }
             Layout.fillHeight: true
 
-            cellWidth: windowRoot.cellWidth
-            cellHeight: windowRoot.cellHeight
+            game: windowRoot.game
 
-            // Disable flicking behavior, we only want the layout of GridView
-            interactive: false
-
-            model: game.map
-
-            delegate: Field {
-                width: windowRoot.cellWidth
-                height: windowRoot.cellHeight
-
-                model: modelData
-                idx: index
-
-                markField: game.markField
-            }
+            cellSize: windowRoot.cellSize
+            marginRatio: windowRoot.marginRatio
         }
     }
 }

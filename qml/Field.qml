@@ -13,10 +13,10 @@ Item {
     property var model: null
     property int idx: -1
 
+    property real marginValue: 0
+
     // Function used to mark the field and advance game logic
-    property var markField: function () {
-        console.error("");
-    }
+    property var markField: null
 
     Rectangle {
         id: fieldFace
