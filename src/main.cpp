@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlEngine>
+#include <QtQml>
 
 #include "noughtsandcrosses.h"
 

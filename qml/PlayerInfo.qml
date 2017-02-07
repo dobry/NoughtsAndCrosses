@@ -4,7 +4,7 @@
 */
 
 import QtQuick 2.5
-import QtQuick.Layouts 1.3
+import QtQuick.Layouts 1.2
 
 import Game 1.0
 
@@ -44,7 +44,7 @@ Rectangle {
                 width: size
                 anchors.centerIn: parent
 
-                source: playerInfoRoot.player.mark === Player.Nought ? "qrc:images/nought.png" : "qrc:images/cross.png"
+                source: playerInfoRoot.player.mark === Player.Nought ? "qrc:/images/nought.png" : "qrc:/images/cross.png"
                 sourceSize.width: size
                 sourceSize.height: size
             }

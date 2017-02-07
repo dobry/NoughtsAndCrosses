@@ -17,7 +17,7 @@ Item {
             height: parent.height * 0.8
             anchors.verticalCenter: parent.verticalCenter
 
-            source: "qrc:images/arrow.png"
+            source: "qrc:/images/arrow.png"
             sourceSize.height: height
 
             mirror: currentPlayer === Player.Nought

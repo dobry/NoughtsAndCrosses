@@ -54,8 +54,8 @@ Item {
                 margins: marginValue
             }
 
-            property string noughtSource: "qrc:images/nought.png"
-            property string crossSource: "qrc:images/cross.png"
+            property string noughtSource: "qrc:/images/nought.png"
+            property string crossSource: "qrc:/images/cross.png"
 
             source: {
                 // if field is hovered show ghost (image + opacity) of currentPlayer's mark
