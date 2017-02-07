@@ -11,13 +11,11 @@ int Player::getScore() const {
 	return score;
 }
 
-int Player::getIndex() const
-{
+int Player::getIndex() const {
 	return index;
 }
 
-void Player::wonGame()
-{
+void Player::wonGame() {
 	score++;
 	emit scoreChanged(score);
 }
@@ -121,6 +119,20 @@ void NoughtsAndCrosses::check() {
 	// check diagonals
 	isWin(checkLine(0, 4), WinSequence::LeftDiagonal);
 	isWin(checkLine(2, 2), WinSequence::RightDiagonal);
+
+	auto isTie = [&getMark, this] () {
+		// check if there is any empty field left
+		for (auto i = 0; i < this->map.size(); i++) {
+			if (getMark(i) == Player::None) {
+				return;
+			}
+		}
+		if (this->state != NoughtsAndCrosses::End) {
+			setState(NoughtsAndCrosses::Tie);
+		}
+	};
+
+	isTie();
 }
 
 QList<QObject*> NoughtsAndCrosses::getMap () const {
@@ -138,6 +150,14 @@ void NoughtsAndCrosses::setWinner(WinCondition condition) {
 	winner = (condition.second == Player::Nought ? player1 : player2);
 	winner->wonGame();
 	emit winnerChanged();
+}
+
+void NoughtsAndCrosses::setCurrentPlayer(Player *player)
+{
+	if (currentPlayer != player) {
+		currentPlayer = player;
+		emit currentPlayerChanged();
+	}
 }
 
 void NoughtsAndCrosses::markField(const int fieldId) {
@@ -160,8 +180,7 @@ void NoughtsAndCrosses::startGame() {
 	setState(GameState::Start);
 }
 
-void NoughtsAndCrosses::nextRound()
-{
+void NoughtsAndCrosses::nextRound() {
 	for (auto i = 0; i < winSequences.size(); i++) {
 		delete winSequences.takeLast();
 	}
@@ -171,6 +190,9 @@ void NoughtsAndCrosses::nextRound()
 		auto field = static_cast<Field*>(fieldObject);
 		field->setMark(Player::None);
 	}
+
+	winner = nullptr;
+	setCurrentPlayer(player1->getScore() < player2->getScore() ? player1 : player2);
 
 	setState(NoughtsAndCrosses::Start);
 }
@@ -201,8 +223,7 @@ QList<QObject *> NoughtsAndCrosses::getWinSequences() const {
 
 void NoughtsAndCrosses::changePlayer() {
 	if (state == GameState::Playing) {
-		currentPlayer = (player1 == currentPlayer) ? player2 : player1;
-		emit currentPlayerChanged();
+		setCurrentPlayer(player1 == currentPlayer ? player2 : player1);
 	}
 }
 

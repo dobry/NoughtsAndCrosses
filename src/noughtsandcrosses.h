@@ -11,7 +11,6 @@ class Player : public QObject {
 	Q_PROPERTY(int mark READ getMark CONSTANT)
 
 	int score;
-	int getScore() const;
 	Q_PROPERTY(int score READ getScore NOTIFY scoreChanged)
 
 	int index;
@@ -20,6 +19,7 @@ class Player : public QObject {
 
 public:
 	int getMark() const;
+	int getScore() const;
 
 	void wonGame();
 
@@ -117,7 +117,7 @@ class NoughtsAndCrosses : public QObject {
 
 public:
 	enum GameState {
-		Start = 1, Playing, End
+		Start = 1, Playing, End, Tie
 	};
 	Q_ENUMS(GameState)
 
@@ -127,6 +127,7 @@ public:
 
 	void setState(NoughtsAndCrosses::GameState newState);
 	void setWinner(WinCondition condition);
+	void setCurrentPlayer(Player* player);
 
 	explicit NoughtsAndCrosses(QObject *parent = 0);
 	~NoughtsAndCrosses();

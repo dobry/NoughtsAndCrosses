@@ -16,7 +16,7 @@ Rectangle {
 
     opacity: 0.95
 
-    visible: game.state === NoughtsAndCrosses.End
+    visible: game.state === NoughtsAndCrosses.End || game.state === NoughtsAndCrosses.Tie
 
     property var game: null
     property real cellSize: 30
@@ -30,7 +30,11 @@ Rectangle {
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
 
-            text: game.winner ? "Player #" + game.winner.index + " won!" : ""
+            text: game.state === NoughtsAndCrosses.Tie
+                  ? "Tie!"
+                  : game.state === NoughtsAndCrosses.End && game.winner
+                    ? "Player #" + game.winner.index + " won!"
+                    : ""
 
             height: cellSize / 4
 
