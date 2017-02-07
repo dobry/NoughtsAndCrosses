@@ -1,10 +1,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
 #include <QQmlEngine>
 
 #include "noughtsandcrosses.h"
-#include "iostream"
 
 int main(int argc, char *argv[]) {
 	QGuiApplication app(argc, argv);

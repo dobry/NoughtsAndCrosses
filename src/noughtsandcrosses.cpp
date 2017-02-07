@@ -1,6 +1,4 @@
 #include "noughtsandcrosses.h"
-#include <vector>
-#include <iostream>
 
 
 int Player::getMark() const {
@@ -102,29 +100,22 @@ void NoughtsAndCrosses::check() {
 		}
 	};
 
-	// check vertical
-	isWin(checkLines(1, 3));
+	// check for winning sequences
+	isWin(checkLines(1, 3)); // vertical
+	isWin(checkLines(3, 1)); // horizontal
+	isWin(checkLine(0, 4)); // left diagonal
+	isWin(checkLine(2, 2)); // right diagonal
 
-	// check horizontal
-	isWin(checkLines(3, 1));
-
-	// check diagonals
-	isWin(checkLine(0, 4));
-	isWin(checkLine(2, 2));
-
-	auto isTie = [&getMark, this] () {
+	// check if it's tie
+	if (this->state != NoughtsAndCrosses::End) {
 		// check if there is any empty field left
 		for (auto i = 0; i < this->map.size(); i++) {
 			if (getMark(i) == Player::None) {
 				return;
 			}
 		}
-		if (this->state != NoughtsAndCrosses::End) {
-			setState(NoughtsAndCrosses::Tie);
-		}
-	};
-
-	isTie();
+		setState(NoughtsAndCrosses::Tie);
+	}
 }
 
 QList<QObject*> NoughtsAndCrosses::getMap () const {
@@ -166,10 +157,6 @@ void NoughtsAndCrosses::markField(const int fieldId) {
 	else {
 		return;
 	}
-}
-
-void NoughtsAndCrosses::startGame() {
-	setState(GameState::Start);
 }
 
 void NoughtsAndCrosses::nextRound() {

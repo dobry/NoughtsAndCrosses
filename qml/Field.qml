@@ -60,7 +60,6 @@ Item {
             source: {
                 // if field is hovered show ghost (image + opacity) of currentPlayer's mark
                 if (model.mark === Player.None && fieldMA.containsMouse) {
-                    console.warn(currentPlayer.mark, Player.Nought);
                     return currentPlayer.mark === Player.Nought ? noughtSource : crossSource;
                 }
                 // otherwise just show assigned mark
