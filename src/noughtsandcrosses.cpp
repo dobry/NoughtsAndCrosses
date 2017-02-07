@@ -60,8 +60,6 @@ NoughtsAndCrosses::~NoughtsAndCrosses() {
  * Checks all possible lines to determin if current player won.
  */
 void NoughtsAndCrosses::check() {
-	std::cout << "checking" << std::endl;
-
 	// Local variable needed to capture `map` in lambdas below
 	auto map = this->map;
 
@@ -117,7 +115,7 @@ void NoughtsAndCrosses::check() {
 
 	// check diagonals
 	isWin(checkLine(0, 4), WinSequence::LeftDiagonal);
-	isWin(checkLine(2, 3), WinSequence::RightDiagonal);
+	isWin(checkLine(2, 2), WinSequence::RightDiagonal);
 }
 
 QList<QObject*> NoughtsAndCrosses::getMap () const {
