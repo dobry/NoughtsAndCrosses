@@ -33,6 +33,7 @@ Item {
             width: cellSize
             height: cellSize
 
+            currentPlayer: game.currentPlayer
             model: modelData
             idx: index
 
