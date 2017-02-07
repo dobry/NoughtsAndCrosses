@@ -10,6 +10,8 @@ import Game 1.0
 Item {
     id: fieldRoot
 
+    enabled: model.mark === Player.None
+
     property var model: null
     property int idx: -1
 
@@ -25,7 +27,13 @@ Item {
         anchors.centerIn: parent
 
         radius: 2
-        color: fieldMA.containsMouse ? "steelblue" : "green"
+        color: model.mark !== Player.None
+                ? "darkgreen"
+                : fieldMA.pressed
+                    ? "	lightslategray"
+                    : fieldMA.containsMouse
+                        ? "steelblue"
+                        : "green"
 
         MouseArea {
             id: fieldMA
@@ -35,7 +43,6 @@ Item {
             onClicked: {
                 fieldRoot.markField(fieldRoot.idx);
             }
-            enabled: model.mark === Player.None
         }
 
         Image {
