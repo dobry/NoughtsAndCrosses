@@ -11,13 +11,18 @@ int Player::getScore() const {
 	return score;
 }
 
+int Player::getIndex() const
+{
+	return index;
+}
+
 void Player::wonGame()
 {
 	score++;
 	emit scoreChanged(score);
 }
 
-Player::Player(Player::PlayerMark playersMark) : mark(playersMark), score(0) {
+Player::Player(Player::PlayerMark playersMark, int setIndex) : mark(playersMark), score(0), index(setIndex) {
 }
 
 void Field::setMark(Player::PlayerMark mark) {
@@ -33,8 +38,8 @@ Field::Field() : mark(0) {
 }
 
 NoughtsAndCrosses::NoughtsAndCrosses(QObject *parent) : QObject(parent), winner(nullptr), state(GameState::Start) {
-	player1 = new Player(Player::Nought);
-	player2 = new Player(Player::Cross);
+	player1 = new Player(Player::Nought, 1);
+	player2 = new Player(Player::Cross, 2);
 	currentPlayer = player1;
 
 	for (auto i = 0; i < 9; i++) {
@@ -153,6 +158,21 @@ void NoughtsAndCrosses::markField(const int fieldId) {
 
 void NoughtsAndCrosses::startGame() {
 	setState(GameState::Start);
+}
+
+void NoughtsAndCrosses::nextRound()
+{
+	for (auto i = 0; i < winSequences.size(); i++) {
+		delete winSequences.takeLast();
+	}
+	emit winSequencesChanged();
+
+	for (auto fieldObject : map) {
+		auto field = static_cast<Field*>(fieldObject);
+		field->setMark(Player::None);
+	}
+
+	setState(NoughtsAndCrosses::Start);
 }
 
 QObject *NoughtsAndCrosses::getCurrentPlayer () const {

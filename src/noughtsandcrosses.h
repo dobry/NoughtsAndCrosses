@@ -11,11 +11,15 @@ class Player : public QObject {
 	Q_PROPERTY(int mark READ getMark CONSTANT)
 
 	int score;
+	int getScore() const;
 	Q_PROPERTY(int score READ getScore NOTIFY scoreChanged)
+
+	int index;
+	int getIndex() const;
+	Q_PROPERTY(int index READ getIndex CONSTANT)
 
 public:
 	int getMark() const;
-	int getScore() const;
 
 	void wonGame();
 
@@ -25,7 +29,7 @@ public:
 	};
 	Q_ENUMS(PlayerMark)
 
-	explicit Player (PlayerMark mark);
+	explicit Player (PlayerMark mark, int setIndex);
 
 signals:
 	void scoreChanged(int score);
@@ -119,6 +123,7 @@ public:
 
 	Q_INVOKABLE void markField(const int fieldId);
 	Q_INVOKABLE void startGame();
+	Q_INVOKABLE void nextRound();
 
 	void setState(NoughtsAndCrosses::GameState newState);
 	void setWinner(WinCondition condition);

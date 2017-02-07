@@ -1,8 +1,8 @@
 import QtQuick 2.5
 import QtQuick.Window 2.2
-import Game 1.0
-import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
+
+import Game 1.0
 
 Window {
     id: windowRoot
@@ -51,5 +51,16 @@ Window {
             cellSize: windowRoot.cellSize
             marginRatio: windowRoot.marginRatio
         }
+    }
+
+    NextRoundBox {
+        width: parent.width * innerRatio
+        height: cellSize
+        anchors.centerIn: parent
+
+        game: windowRoot.game
+
+        cellSize: windowRoot.cellSize
+        innerRatio: windowRoot.innerRatio
     }
 }
