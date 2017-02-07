@@ -53,10 +53,6 @@ NoughtsAndCrosses::~NoughtsAndCrosses() {
 
 	delete player1;
 	delete player2;
-
-	for (auto i = 0; i < winSequences.size(); i++) {
-		delete winSequences.takeLast();
-	}
 }
 
 /* Called whenever a player marks a field.
@@ -97,12 +93,8 @@ void NoughtsAndCrosses::check() {
 		return WinCondition(-1, Player::None);
 	};
 
-	auto isWin = [this] (WinCondition condition, WinSequence::Direction direction) {
+	auto isWin = [this] (WinCondition condition) {
 		if (condition.first != -1) {
-			auto sequence = new WinSequence(condition.first, direction);
-			winSequences.append(sequence);
-			emit winSequencesChanged();
-
 			if (state != GameState::End) {
 				setState(GameState::End);
 				this->setWinner(condition);
@@ -111,14 +103,14 @@ void NoughtsAndCrosses::check() {
 	};
 
 	// check vertical
-	isWin(checkLines(1, 3), WinSequence::Vertical);
+	isWin(checkLines(1, 3));
 
 	// check horizontal
-	isWin(checkLines(3, 1), WinSequence::Horizontal);
+	isWin(checkLines(3, 1));
 
 	// check diagonals
-	isWin(checkLine(0, 4), WinSequence::LeftDiagonal);
-	isWin(checkLine(2, 2), WinSequence::RightDiagonal);
+	isWin(checkLine(0, 4));
+	isWin(checkLine(2, 2));
 
 	auto isTie = [&getMark, this] () {
 		// check if there is any empty field left
@@ -181,11 +173,6 @@ void NoughtsAndCrosses::startGame() {
 }
 
 void NoughtsAndCrosses::nextRound() {
-	for (auto i = 0; i < winSequences.size(); i++) {
-		delete winSequences.takeLast();
-	}
-	emit winSequencesChanged();
-
 	for (auto fieldObject : map) {
 		auto field = static_cast<Field*>(fieldObject);
 		field->setMark(Player::None);
@@ -217,23 +204,8 @@ QObject *NoughtsAndCrosses::getWinner() const {
 	return winner;
 }
 
-QList<QObject *> NoughtsAndCrosses::getWinSequences() const {
-	return winSequences;
-}
-
 void NoughtsAndCrosses::changePlayer() {
 	if (state == GameState::Playing) {
 		setCurrentPlayer(player1 == currentPlayer ? player2 : player1);
 	}
-}
-
-int WinSequence::getFrom() const {
-	return from;
-}
-
-int WinSequence::getDirection() const {
-	return direction;
-}
-
-WinSequence::WinSequence(int setFrom, int setDirection) : from(setFrom), direction(setDirection) {
 }

@@ -58,30 +58,6 @@ signals:
 };
 
 
-class WinSequence : public QObject {
-	Q_OBJECT
-
-	int from;
-	int getFrom() const;
-	Q_PROPERTY(int from READ getFrom CONSTANT)
-
-	int direction;
-	int getDirection() const;
-	Q_PROPERTY(int direction READ getDirection CONSTANT)
-
-public:
-	explicit WinSequence(int setFrom, int setDirection);
-
-
-	enum Direction
-	{
-		Horizontal = 1, Vertical, LeftDiagonal, RightDiagonal
-	};
-	Q_ENUMS(Direction)
-};
-Q_DECLARE_METATYPE(WinSequence::Direction)
-
-
 class NoughtsAndCrosses : public QObject {
 	Q_OBJECT
 
@@ -109,10 +85,6 @@ class NoughtsAndCrosses : public QObject {
 	int getState() const;
 	Q_PROPERTY(int state READ getState NOTIFY stateChanged)
 
-	QList<QObject*> winSequences;
-	QList<QObject*> getWinSequences () const;
-	Q_PROPERTY(QList<QObject*> winSequences READ getWinSequences NOTIFY winSequencesChanged)
-
 	void changePlayer();
 
 public:
@@ -138,7 +110,6 @@ signals:
 	void mapChanged();
 	void currentPlayerChanged();
 	void stateChanged();
-	void winSequencesChanged();
 	void winnerChanged();
 
 public slots:
